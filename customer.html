@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Book a dog walk with Leo, Dylan, or Leo and Dylan together.">
+<meta name="theme-color" content="#1f7a5a">
+<title>Dog Walk Buddy — Book a Walk</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f7f5;color:#17352b}
+header{background:#1f7a5a;color:#fff;padding:25px 18px;border-radius:0 0 25px 25px}header h1{margin:0;font-size:28px}header p{margin:6px 0 0;opacity:.92}
+main{max-width:650px;margin:auto;padding:15px}.card{background:#fff;border-radius:18px;padding:18px;margin:12px 0;box-shadow:0 3px 14px #17352b12}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.choice{border:2px solid #d9e5df;background:#fff;border-radius:14px;padding:13px;font-weight:800}.choice.selected{border-color:#1f7a5a;background:#e8f5ee}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccd9d3;border-radius:12px;margin:5px 0 12px;font-size:15px}label{font-size:14px;font-weight:800}
+button{cursor:pointer}.primary{width:100%;border:0;border-radius:14px;background:#1f7a5a;color:#fff;padding:13px;font-size:16px;font-weight:800;margin-top:5px}.small{font-size:13px;color:#60746c}.notice{background:#fff5d8;border-radius:14px;padding:12px;font-size:13px}.price{font-size:18px;font-weight:800}.result{background:#eef6f1;border-radius:14px;padding:14px;margin-top:12px;white-space:pre-wrap}.profile{border:1px solid #d9e5df;border-radius:14px;padding:13px;margin:9px 0}
+</style>
+</head>
+<body>
+<header><h1>🐾 Dog Walk Buddy</h1><p>Book a dog walk with Leo, Dylan, or both together.</p></header>
+<main>
+<div class="card">
+<h2>📅 Book a Walk</h2>
+<p class="small">Choose who you'd like to walk your dog and fill in the details.</p>
+<label>Who would you like?</label>
+<div class="grid">
+<button type="button" class="choice selected" id="leo" onclick="pick('Leo')">🐶 Leo</button>
+<button type="button" class="choice" id="dylan" onclick="pick('Dylan')">🐕 Dylan</button>
+<button type="button" class="choice" id="both" onclick="pick('Leo + Dylan')" style="grid-column:1/-1">🐶🐕 Leo + Dylan</button>
+</div>
+<p id="picked" class="small">Selected: Leo</p>
+<label>Dog's name</label><input id="dog" placeholder="e.g. Milo">
+<label>Your name</label><input id="name" placeholder="First name">
+<label>Date</label><input id="date" type="date">
+<label>Time</label><input id="time" type="time">
+<label>Walk length</label>
+<select id="length">
+<option value="30 minutes — £5">30 minutes — £5</option>
+<option value="45 minutes — £10">45 minutes — £10</option>
+<option value="1 hour — £15">1 hour — £15</option>
+</select>
+<label>Notes</label><textarea id="notes" placeholder="Anything we should know about your dog?"></textarea>
+<button class="primary" onclick="makeRequest()">Create booking request</button>
+<div id="result"></div>
+</div>
+
+<div class="card">
+<h2>💷 Prices</h2>
+<p class="price">30 minutes — £5</p>
+<p class="price">45 minutes — £10</p>
+<p class="price">1 hour — £15</p>
+</div>
+
+<div class="card">
+<h2>👋 About the walkers</h2>
+<div class="profile"><b>🐶 Leo</b><p class="small">Dog walking with care and attention.</p></div>
+<div class="profile"><b>🐕 Dylan</b><p class="small">A separate walker option for your booking.</p></div>
+<div class="profile"><b>🐶🐕 Leo + Dylan</b><p class="small">Both walkers together.</p></div>
+</div>
+
+<div class="card">
+<div class="notice">🔒 Please don't enter private information such as your home address in the notes.</div>
+<p class="small">After creating the request, use the booking summary to send the details to Leo or Dylan so they can confirm the walk.</p>
+</div>
+</main>
+<script>
+let walker='Leo';
+function pick(w){walker=w;['leo','dylan','both'].forEach(id=>document.getElementById(id).classList.remove('selected'));document.getElementById(w==='Leo'?'leo':w==='Dylan'?'dylan':'both').classList.add('selected');document.getElementById('picked').textContent='Selected: '+w;}
+function makeRequest(){
+ const dog=document.getElementById('dog').value.trim(),name=document.getElementById('name').value.trim(),date=document.getElementById('date').value,time=document.getElementById('time').value,length=document.getElementById('length').value,notes=document.getElementById('notes').value.trim();
+ if(!dog||!name||!date||!time){document.getElementById('result').innerHTML='<div class="result">Please fill in the dog name, your name, date and time.</div>';return;}
+ const text='DOG WALK REQUEST\n\nWalker: '+walker+'\nDog: '+dog+'\nCustomer: '+name+'\nDate: '+date+'\nTime: '+time+'\nWalk: '+length+'\nNotes: '+(notes||'None');
+ document.getElementById('result').innerHTML='<div class="result">'+escapeHtml(text)+'\br><br><b>Copy this request and send it to the walker to confirm.</b></div>';
+}
+function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+</script>
+</body>
+</html>
