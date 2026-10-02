@@ -34,7 +34,7 @@ input,select,textarea{width:100%;padding:12px;border:1px solid #ccd9d3;border-ra
 <div class="stat">💷 Earned<b id="totalEarn">£0.00</b></div><div class="stat">🐕 Walks<b id="totalWalks">0</b></div>
 <div class="stat">⭐ Rating<b id="rating">New</b></div><div class="stat">🎯 Goal<b id="goalPct">0%</b></div>
 </div>
-<div class="card"><h3>Upcoming bookings</h3><div id="upcoming"></div></div>
+<div class="card"><h3>☁️ Shared booking requests</h3><p class="small">Customer requests appear here automatically for you and Dylan.</p><div id="cloudLogin"><label>Email</label><input id="cloudEmail" type="email" placeholder="Your Firebase account email"><label>Password</label><input id="cloudPassword" type="password" placeholder="Password"><button class="primary" onclick="connectSharedBookings()">Connect shared bookings</button><p id="cloudMsg" class="small"></p></div><div id="cloudRequests" style="margin-top:12px"></div></div><div class="card"><h3>Upcoming bookings</h3><div id="upcoming"></div></div>
 </section>
 <section id="book">
 <div class="card"><h2>📅 Book a walk</h2><p class="small">Customer booking page</p>
@@ -115,4 +115,39 @@ function renderRatings(){let a=data.ratings.length?data.ratings.reduce((x,y)=>x+
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
 $('goal').value=data.goal;render();
 </script>
-</body></html>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="cloud-bookings.js"></script>
+<script>
+let cloudBookings={};
+let stopCloudListening=null;
+async function connectSharedBookings(){
+ const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;
+ if(!email||!password){$('cloudMsg').textContent='Enter the email and password for your walker account.';return;}
+ $('cloudMsg').textContent='Connecting…';
+ try{
+   await DWBCloud.initAdmin(email,password);
+   $('cloudLogin').innerHTML='<p class="small">✅ Shared bookings connected.</p>';
+   if(stopCloudListening) stopCloudListening();
+   stopCloudListening=DWBCloud.listenBookings(v=>{cloudBookings=v||{};renderCloudBookings();});
+ }catch(e){$('cloudMsg').textContent='Could not connect. Check the Firebase account details and setup.';}
+}
+function renderCloudBookings(){
+ const entries=Object.entries(cloudBookings).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+ if(!entries.length){$('cloudRequests').innerHTML='<p class="small">No customer requests yet.</p>';return;}
+ $('cloudRequests').innerHTML=entries.map(function(pair){
+   const id=pair[0],j=pair[1];
+   const who=j.walker==='Leo'?'Leo':j.walker==='Dylan'?'Dylan':'Leo + Dylan';
+   let buttons='';
+   if(j.status==='Pending') buttons='<button class="secondary" onclick="cloudStatus(\''+id+'\',\'Accepted\')">Accept booking</button> <button class="secondary" onclick="cloudStatus(\''+id+'\',\'Declined\')">Decline</button>';
+   else if(j.status==='Accepted') buttons='<button class="secondary" onclick="cloudStatus(\''+id+'\',\'Completed\')">Mark completed</button>';
+   return '<div class="job"><div class="row"><b>🐕 '+esc(j.dog)+'</b><span class="pill">'+esc(j.status||'Pending')+'</span></div><p>👤 '+esc(j.customer)+'<br>📅 '+esc(j.date)+' · '+esc(j.time)+'<br>🚶 '+esc(j.length)+' · 💷 £'+Number(j.pay||0).toFixed(2)+'<br>👥 '+esc(who)+'</p><p class="small">'+esc(j.notes||'')+'</p>'+buttons+'</div>';
+ }).join('');
+}
+async function cloudStatus(id,status){
+ try{await DWBCloud.updateBooking(id,{status:status,updatedAt:firebase.database.ServerValue.TIMESTAMP});}
+ catch(e){alert('Could not update the booking.');}
+}
+</script></body></html>
