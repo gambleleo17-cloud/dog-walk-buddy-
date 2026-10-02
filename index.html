@@ -132,7 +132,11 @@ async function connectSharedBookings(){
    $('cloudLogin').innerHTML='<p class="small">✅ Shared bookings connected.</p>';
    if(stopCloudListening) stopCloudListening();
    stopCloudListening=DWBCloud.listenBookings(v=>{cloudBookings=v||{};renderCloudBookings();});
- }catch(e){$('cloudMsg').textContent='Could not connect. Check the Firebase account details and setup.';}
+ }catch(e){
+  const code=e&&e.code?String(e.code):'unknown';
+  const msg=e&&e.message?String(e.message):String(e);
+  $('cloudMsg').textContent='Firebase error: '+code+' — '+msg;
+}
 }
 function renderCloudBookings(){
  const entries=Object.entries(cloudBookings).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
