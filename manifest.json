@@ -1,0 +1,10 @@
+{
+  "name":"Dog Walk Buddy",
+  "short_name":"Dog Walk Buddy",
+  "start_url":"./",
+  "display":"standalone",
+  "background_color":"#111827",
+  "theme_color":"#1f7a5a",
+  "description":"Book dog walks with Leo, Dylan, or both together.",
+  "icons":[{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
