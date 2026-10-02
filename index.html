@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Dog Walk Buddy — book dog walks with Leo, Dylan, or both together.">
+<meta name="theme-color" content="#111827">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1f7a5a">
+<title>Dog Walk Buddy V2</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f4f7f5;color:#17352b}
+header{background:#1f7a5a;color:#fff;padding:22px 18px;border-radius:0 0 25px 25px}header h1{margin:0;font-size:28px}header p{margin:5px 0;opacity:.9}
+main{max-width:850px;margin:auto;padding:15px}.tabs{display:flex;gap:7px;overflow:auto;margin-bottom:14px}.tab{border:0;padding:10px 13px;border-radius:999px;background:#dce9e3;font-weight:800;white-space:nowrap}.tab.active{background:#1f7a5a;color:white}
+section{display:none}.card{background:#fff;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 3px 14px #17352b12}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.stat{background:#eef6f1;padding:14px;border-radius:15px}.stat b{display:block;font-size:22px}
+button{cursor:pointer}.primary{width:100%;border:0;border-radius:14px;background:#1f7a5a;color:#fff;padding:13px;font-size:16px;font-weight:800;margin-top:8px}.secondary{border:0;border-radius:11px;background:#e7f0eb;padding:10px;font-weight:800}.pill{display:inline-block;background:#e5f3ec;color:#176247;border-radius:99px;padding:5px 9px;font-size:12px;font-weight:800}
+input,select,textarea{width:100%;padding:12px;border:1px solid #ccd9d3;border-radius:12px;margin:5px 0 10px;font-size:15px}label{font-size:14px;font-weight:800}.small{font-size:13px;color:#60746c}.notice{background:#fff5d8;border-radius:14px;padding:12px;font-size:13px}.job{border:1px solid #d9e5df;border-radius:15px;padding:14px;margin:10px 0}.row{display:flex;justify-content:space-between;align-items:center;gap:10px}.stars{letter-spacing:2px;font-size:20px}.bar{height:12px;background:#e1ebe6;border-radius:99px;overflow:hidden}.fill{height:100%;background:#1f7a5a}.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}.day{padding:8px 3px;border-radius:10px;text-align:center;background:#f0f5f2;font-size:12px}.day.on{background:#ccebdd;font-weight:800}.day.off{opacity:.45}.avatar{width:55px;height:55px;border-radius:50%;background:#d9eee5;display:grid;place-items:center;font-size:28px}
+</style>
+<link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg" type="image/svg+xml"></head>
+<body>
+<header><h1>🐾 Dog Walk Buddy</h1><p>Book walks • manage your time • track your earnings</p></header>
+<main>
+<div class="tabs">
+<button class="tab active" onclick="tab('home',this)">Home</button>
+<button class="tab" onclick="tab('book',this)">Book a Walk</button>
+<button class="tab" onclick="tab('calendar',this)">Availability</button>
+<button class="tab" onclick="tab('profile',this)">Profiles</button>
+<button class="tab" onclick="tab('earnings',this)">Earnings</button>
+</div>
+<section id="home" style="display:block">
+<div class="card"><h2>Welcome 👋</h2><p>Your dog-walking dashboard.</p>
+<div class="notice">🔒 Keep your personal information private. Only arrange jobs in ways that comply with your local rules, and don't publish your home address or private contact details.</div></div>
+<div class="grid">
+<div class="stat">💷 Earned<b id="totalEarn">£0.00</b></div><div class="stat">🐕 Walks<b id="totalWalks">0</b></div>
+<div class="stat">⭐ Rating<b id="rating">New</b></div><div class="stat">🎯 Goal<b id="goalPct">0%</b></div>
+</div>
+<div class="card"><h3>Upcoming bookings</h3><div id="upcoming"></div></div>
+</section>
+<section id="book">
+<div class="card"><h2>📅 Book a walk</h2><p class="small">Customer booking page</p>
+<label>Choose your walker</label>
+<div class="grid" style="margin-bottom:10px">
+<button type="button" class="secondary" id="leoBtn" onclick="chooseWalker('you')">🐶 Leo</button>
+<button type="button" class="secondary" id="dylanBtn" onclick="chooseWalker('mate')">🐕 Dylan</button>
+<button type="button" class="secondary" id="bothBtn" onclick="chooseWalker('both')" style="grid-column:1/-1">🐶🐕 Leo + Dylan</button>
+</div>
+<input type="hidden" id="walker" value="you">
+<p id="walkerChoice" class="small">Selected walker: Leo</p>
+<label>Dog name</label><input id="bdog" placeholder="e.g. Milo">
+<label>Preferred date</label><input id="bdate" type="date">
+<label>Time</label><input id="btime" type="time">
+<label>Walk length & price</label>
+<select id="blength" onchange="updatePrice()">
+<option value="30 minutes" data-price="5">30 minutes — £5</option>
+<option value="45 minutes" data-price="10">45 minutes — £10</option>
+<option value="60 minutes" data-price="15">1 hour — £15</option>
+</select>
+<p id="priceDisplay" class="small">Price: £5</p>
+<label>Customer name</label><input id="customer" placeholder="First name">
+<label>Notes</label><textarea id="bnotes" placeholder="Anything the walker should know?"></textarea>
+<button class="primary" onclick="requestBooking()">Request booking</button>
+<p id="bookMsg" class="small"></p></div>
+</section>
+<section id="calendar">
+<div class="card"><h2>🗓️ Availability</h2><p class="small">Tap days you can walk. This is stored on this device.</p><div class="cal" id="cal"></div>
+<hr><label>Usual start time</label><input id="start" type="time" value="16:00"><label>Usual finish time</label><input id="finish" type="time" value="19:00"><button class="primary" onclick="saveAvailability()">Save availability</button></div>
+</section>
+<section id="profile">
+<div class="card"><h2>👤 Walker profiles</h2>
+<div class="job"><div class="row"><div class="avatar">🐶</div><div style="flex:1"><b>Leo's profile</b><p class="small">Shown to customers before they request a walk.</p></div></div>
+<label>Name / nickname</label><input id="pname" value="Leo" placeholder="Your name">
+<label>Short bio</label><textarea id="pbio" placeholder="Tell customers about your experience with dogs."></textarea>
+<label>Experience</label><select id="pexp"><option>New to dog walking</option><option>Some experience</option><option>Experienced</option></select></div>
+<div class="job"><div class="row"><div class="avatar">🐕</div><div style="flex:1"><b>Dylan's profile</b><p class="small">A separate profile for your mate.</p></div></div>
+<label>Mate's name / nickname</label><input id="mname" value="Dylan" placeholder="Mate's name"><label>Mate's bio</label><textarea id="mbio"></textarea></div>
+<button class="primary" onclick="saveProfiles()">Save profiles</button>
+<p id="profileMsg" class="small"></p></div>
+</section>
+<section id="earnings">
+<div class="card"><h2>💷 Earnings goals</h2><label>Weekly goal (£)</label><input id="goal" type="number" min="0" step="1" placeholder="50"><button class="primary" onclick="saveGoal()">Save goal</button>
+<div style="margin-top:15px"><div class="row"><b id="goalText">£0 / £0</b><span id="goalPercent">0%</span></div><div class="bar"><div class="fill" id="goalBar" style="width:0%"></div></div></div></div>
+<div class="card"><h3>Ratings</h3><p class="stars" id="stars">☆☆☆☆☆</p><p id="ratingText" class="small">No ratings yet.</p>
+<label>Demo customer rating</label><select id="newRating"><option value="5">5 stars</option><option value="4">4 stars</option><option value="3">3 stars</option><option value="2">2 stars</option><option value="1">1 star</option></select><button class="secondary" onclick="addRating()">Add rating</button></div>
+</section>
+</main>
+<script>
+const KEY='dwb2';
+let data=JSON.parse(localStorage.getItem(KEY)||'null')||{jobs:[],profile:{},availability:[1,2,3,4,5],goal:50,ratings:[]};
+const $=id=>document.getElementById(id);
+function save(){localStorage.setItem(KEY,JSON.stringify(data));}
+function tab(id,btn){document.querySelectorAll('section').forEach(s=>s.style.display='none');$(id).style.display='block';document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');render();}
+function render(){
+let done=data.jobs.filter(j=>j.status==='Completed'), earned=done.reduce((a,j)=>a+j.pay,0);
+$('totalEarn').textContent='£'+earned.toFixed(2);$('totalWalks').textContent=done.length;
+let avg=data.ratings.length?data.ratings.reduce((a,b)=>a+b,0)/data.ratings.length:0;
+$('rating').textContent=avg?avg.toFixed(1)+' ★':'New';
+let pct=data.goal?Math.min(100,earned/data.goal*100):0;$('goalPct').textContent=Math.round(pct)+'%';
+$('goalText').textContent='£'+earned.toFixed(2)+' / £'+Number(data.goal||0).toFixed(2);$('goalPercent').textContent=Math.round(pct)+'%';$('goalBar').style.width=pct+'%';
+$('upcoming').innerHTML=data.jobs.filter(j=>j.status!=='Completed').slice(0,5).map(j=>jobHTML(j)).join('')||'<p class="small">No bookings yet.</p>';
+renderCal();renderProfiles();renderRatings();
+}
+function jobHTML(j){return `<div class="job"><div class="row"><b>🐕 ${esc(j.dog)}</b><span class="pill">${esc(j.status)}</span></div><p>📅 ${esc(j.date)} · ${esc(j.time)}<br>🚶 ${esc(j.length)} · 💷 £${Number(j.pay).toFixed(2)}<br>👤 ${esc(j.customer||'Customer')}</p><p class="small">${esc(j.notes||'')}</p>${j.status!=='Completed'?`<button class="secondary" onclick="complete(${j.id})">Mark completed</button>`:''}</div>`}
+function chooseWalker(w){$('walker').value=w;const label=w==='you'?'Leo':w==='mate'?'Dylan':'Leo + Dylan';$('walkerChoice').textContent='Selected walker: '+label;$('leoBtn').style.outline=w==='you'?'3px solid #1f7a5a':'none';$('dylanBtn').style.outline=w==='mate'?'3px solid #1f7a5a':'none';$('bothBtn').style.outline=w==='both'?'3px solid #1f7a5a':'none';}
+function updatePrice(){const option=$('blength').selectedOptions[0];$('priceDisplay').textContent='Price: £'+option.dataset.price;}
+function requestBooking(){let j={id:Date.now(),dog:$('bdog').value,date:$('bdate').value,time:$('btime').value,length:$('blength').value,customer:$('customer').value,notes:$('bnotes').value,walker:$('walker').value,status:'Confirmed',pay:Number($('blength').selectedOptions[0].dataset.price)};if(!j.dog||!j.date||!j.time||!j.customer){$('bookMsg').textContent='Please fill in the dog, date, time and customer name.';return}data.jobs.push(j);save();$('bookMsg').textContent='Booking request saved.';render();}
+function complete(id){let j=data.jobs.find(x=>x.id===id);if(j){j.status='Completed';save();render()}}
+function renderCal(){let names=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];$('cal').innerHTML=names.map((n,i)=>`<button class="day ${data.availability.includes(i)?'on':'off'}" onclick="toggleDay(${i})">${n}</button>`).join('')}
+function toggleDay(i){data.availability=data.availability.includes(i)?data.availability.filter(x=>x!==i):[...data.availability,i];save();renderCal()}
+function saveAvailability(){data.start=$('start').value;data.finish=$('finish').value;save();alert('Availability saved.')}
+function saveProfiles(){data.profile={name:$('pname').value,bio:$('pbio').value,exp:$('pexp').value,mate:$('mname').value,matebio:$('mbio').value};save();$('profileMsg').textContent='Profiles saved.'}
+function renderProfiles(){let p=data.profile||{};$('pname').value=p.name||'Leo';$('pbio').value=p.bio||'';$('pexp').value=p.exp||'New to dog walking';$('mname').value=p.mate||'Dylan';$('mbio').value=p.matebio||''}
+function saveGoal(){data.goal=Math.max(0,Number($('goal').value||0));save();render()}
+function addRating(){data.ratings.push(Number($('newRating').value));save();render()}
+function renderRatings(){let a=data.ratings.length?data.ratings.reduce((x,y)=>x+y,0)/data.ratings.length:0;$('stars').textContent='★★★★★'.slice(0,Math.round(a))+'☆☆☆☆☆'.slice(0,5-Math.round(a));$('ratingText').textContent=data.ratings.length?`${data.ratings.length} rating(s), average ${a.toFixed(1)} / 5`:'No ratings yet.'}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]))}
+$('goal').value=data.goal;render();
+</script>
+</body></html>
