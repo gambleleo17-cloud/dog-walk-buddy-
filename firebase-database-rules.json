@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "bookings": {
+      ".read": "auth != null && auth.token.firebase.sign_in_provider == 'password'",
+      "$bookingId": {
+        ".write": "(auth != null && auth.token.firebase.sign_in_provider == 'password') || (auth != null && auth.token.firebase.sign_in_provider == 'anonymous' && !data.exists() && newData.exists())",
+        ".validate": "newData.hasChildren(['walker','dog','customer','date','time','length','pay','status','createdAt'])"
+      }
+    }
+  }
+}
