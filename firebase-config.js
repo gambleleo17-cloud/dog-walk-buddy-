@@ -1,11 +1,10 @@
 // Firebase connection settings for Dog Walk Buddy.
-// Paste the config from Firebase Console > Project settings > Your apps > Web app.
 window.DWB_FIREBASE_CONFIG = {
-  apiKey: "PASTE_API_KEY_HERE",
-  authDomain: "PASTE_PROJECT_ID.firebaseapp.com",
-  databaseURL: "PASTE_DATABASE_URL_HERE",
-  projectId: "PASTE_PROJECT_ID_HERE",
-  storageBucket: "PASTE_STORAGE_BUCKET_HERE",
-  messagingSenderId: "PASTE_MESSAGING_SENDER_ID_HERE",
-  appId: "PASTE_APP_ID_HERE"
+  apiKey: "AIzaSyCnjoCmfnKJtdSxIHp18yjF1kUkhbsHN3U",
+  authDomain: "dog-walk-buddy.firebaseapp.com",
+  databaseURL: "https://dog-walk-buddy-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "dog-walk-buddy",
+  storageBucket: "dog-walk-buddy.firebasestorage.app",
+  messagingSenderId: "385094228184",
+  appId: "1:385094228184:web:f50be4a676e99593e55fad"
 };
