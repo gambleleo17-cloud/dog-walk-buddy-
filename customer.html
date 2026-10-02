@@ -73,5 +73,23 @@ function makeRequest(){
 }
 function escapeHtml(s){return s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 </script>
-</body>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script src="cloud-bookings.js"></script>
+<script>
+async function makeRequest(){
+ const dog=document.getElementById('dog').value.trim(),name=document.getElementById('name').value.trim(),date=document.getElementById('date').value,time=document.getElementById('time').value,length=document.getElementById('length').value,notes=document.getElementById('notes').value.trim();
+ if(!dog||!name||!date||!time){document.getElementById('result').innerHTML='<div class="result">Please fill in the dog name, your name, date and time.</div>';return;}
+ const pay=length.includes('£5')?5:length.includes('£10')?10:15;
+ try{
+   await DWBCloud.initCustomer();
+   const id=await DWBCloud.addBooking({walker:walker,dog:dog,customer:name,date:date,time:time,length:length.split(' — ')[0],pay:pay,notes:notes||'None'});
+   document.getElementById('result').innerHTML='<div class="result"><b>✅ Booking request sent!</b><br><br>Your request has been sent to the walkers. They can now see it in their Dog Walk Buddy app.<br><br>Request ID: '+escapeHtml(id)+'</div>';
+ }catch(e){
+   document.getElementById('result').innerHTML='<div class="result">The booking form is ready, but the shared booking system has not been connected yet. Please try again after it has been set up.</div>';
+ }
+}
+</script></body>
 </html>
