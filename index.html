@@ -157,4 +157,5 @@ function renderCloudBookings(){
 async function cloudStatus(id,status){
  try{await DWBCloud.updateBooking(id,{status:status,updatedAt:firebase.database.ServerValue.TIMESTAMP});}
  catch(e){alert('Could not update the booking.');}
-}\n</script></body></html>
+}
+</script></body></html>
