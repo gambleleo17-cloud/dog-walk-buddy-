@@ -16,7 +16,6 @@
       if(!window.firebase) throw new Error("Firebase SDK did not load.");
       if(!firebase.apps.length) firebase.initializeApp(cfg);
       this.auth=firebase.auth(); this.db=firebase.database();
-      await this.auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
       const cred=await this.auth.signInWithEmailAndPassword(email,password);
       this.user=cred.user; return cred.user;
     },
@@ -40,15 +39,6 @@
       const fn=s=>cb(s.val()||{});
       ref.on("value",fn);
       return function(){ref.off("value",fn);};
-    },
-    restoreAdmin:async function(){
-      if(!ready) return null;
-      if(!window.firebase) return null;
-      if(!firebase.apps.length) firebase.initializeApp(cfg);
-      this.auth=firebase.auth(); this.db=firebase.database();
-      const user=this.auth.currentUser;
-      if(user && !user.isAnonymous){ this.user=user; return user; }
-      return null;
     },
     updateBooking:async function(id,patch){
       if(!this.db) throw new Error("Not connected.");
