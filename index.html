@@ -122,6 +122,15 @@ $('goal').value=data.goal;render();
 <script>
 let cloudBookings={};
 let stopCloudListening=null;
+async function restoreSharedBookings(){
+ try{
+   const user=await DWBCloud.restoreAdmin();
+   if(!user) return;
+   $('cloudLogin').innerHTML='<p class="small">✅ Shared bookings connected.</p>';
+   if(stopCloudListening) stopCloudListening();
+   stopCloudListening=DWBCloud.listenBookings(v=>{cloudBookings=v||{};renderCloudBookings();});
+ }catch(e){}
+}
 async function connectSharedBookings(){
  const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;
  if(!email||!password){$('cloudMsg').textContent='Enter the email and password for your walker account.';return;}
@@ -153,4 +162,4 @@ async function cloudStatus(id,status){
  try{await DWBCloud.updateBooking(id,{status:status,updatedAt:firebase.database.ServerValue.TIMESTAMP});}
  catch(e){alert('Could not update the booking.');}
 }
-</script></body></html>
+setTimeout(restoreSharedBookings,300);\n</script></body></html>
