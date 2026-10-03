@@ -118,7 +118,7 @@ $('goal').value=data.goal;render();
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-database-compat.js"></script>
-<script src="cloud-bookings.js?v=5"></script>
+<script src="cloud-bookings.js?v=6"></script>
 <script>
 let cloudBookings={};
 let stopCloudListening=null;
@@ -157,5 +157,4 @@ function renderCloudBookings(){
 async function cloudStatus(id,status){
  try{await DWBCloud.updateBooking(id,{status:status,updatedAt:firebase.database.ServerValue.TIMESTAMP});}
  catch(e){alert('Could not update the booking.');}
-}
-setTimeout(restoreSharedBookings,300);\n</script></body></html>
+}\n</script></body></html>
