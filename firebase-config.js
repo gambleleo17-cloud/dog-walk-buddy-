@@ -1,6 +1,6 @@
 // Firebase connection settings for Dog Walk Buddy.
 window.DWB_FIREBASE_CONFIG = {
-  apiKey: "AIzaSyCnjoCmfnKJtdSxIHp18yjF1kUkhbsHN3U",
+  apiKey: "AIzaSyCnjoCmmfkJtdSxIHp18yjF1kUkhbsHN3U",
   authDomain: "dog-walk-buddy.firebaseapp.com",
   databaseURL: "https://dog-walk-buddy-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "dog-walk-buddy",
