@@ -118,28 +118,28 @@ $('goal').value=data.goal;render();
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/12.19.0/firebase-database-compat.js"></script>
-<script src="cloud-bookings.js?v=6"></script>
+<script src="cloud-bookings.js?v=7"></script>
 <script>
 let cloudBookings={};
 let stopCloudListening=null;
 async function connectSharedBookings(){
  const email=$('cloudEmail').value.trim(),password=$('cloudPassword').value;
- if(!email||!password){$('cloudMsg').textContent='Enter the email and password for your walker account.';return;}
+ const msg=$('cloudMsg');
  const btn=document.querySelector('#cloudLogin button');
+ if(!email||!password){msg.textContent='Enter your email and password.';return;}
  if(btn) btn.disabled=true;
- $('cloudMsg').textContent='Connecting to Firebase…';
+ msg.textContent='Signing in…';
  try{
-   if(!window.DWBCloud) throw new Error('Firebase helper did not load. Refresh the page and try again.');
-   const login=Promise.resolve(DWBCloud.initAdmin(email,password));
-   await Promise.race([login,new Promise((_,reject)=>setTimeout(()=>reject(new Error('Firebase sign-in timed out. Check your internet connection and Firebase setup.')),15000))]);
-   $('cloudLogin').innerHTML='<p class="small">✅ Shared bookings connected.</p>';
+   if(!window.firebase) throw new Error('Firebase did not load. Try refreshing the page.');
+   if(!window.DWBCloud) throw new Error('Shared booking system did not load.');
+   await DWBCloud.initAdmin(email,password);
+   msg.textContent='✅ Signed in. Loading bookings…';
    if(stopCloudListening) stopCloudListening();
    stopCloudListening=DWBCloud.listenBookings(v=>{cloudBookings=v||{};renderCloudBookings();});
+   msg.textContent='✅ Shared bookings connected.';
  }catch(e){
-  const code=e&&e.code?String(e.code):'unknown';
-  const msg=e&&e.message?String(e.message):String(e);
-  $('cloudMsg').textContent='Firebase error: '+code+' — '+msg;
-  if(btn) btn.disabled=false;
+   msg.textContent='❌ Login failed: '+(e.code||'unknown')+' — '+(e.message||e);
+   if(btn) btn.disabled=false;
  }
 }
 function renderCloudBookings(){
