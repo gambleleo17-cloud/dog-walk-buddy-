@@ -8,8 +8,7 @@
     messagingSenderId:"385094228184",
     appId:"1:385094228184:web:f50be4a676e99593e55fad"
   };
-  const external=window.DWB_FIREBASE_CONFIG||{};
-  const cfg=external.apiKey && external.databaseURL ? external : fallback;
+  const cfg=fallback;
   const ready=!!(cfg.apiKey && cfg.databaseURL);
   window.DWBCloud={enabled:ready,user:null,db:null,auth:null,
     initAdmin:async function(email,password){
