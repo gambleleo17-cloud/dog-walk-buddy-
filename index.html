@@ -155,7 +155,12 @@ function renderCloudBookings(){
  }).join('');
 }
 async function cloudStatus(id,status){
- try{await DWBCloud.updateBooking(id,{status:status,updatedAt:firebase.database.ServerValue.TIMESTAMP});}
- catch(e){alert('Could not update the booking.');}
+ try{
+  await DWBCloud.updateBooking(id,{status:status,updatedAt:firebase.database.ServerValue.TIMESTAMP});
+  if(status==='Declined'){
+   delete cloudBookings[id];
+   renderCloudBookings();
+  }
+ }catch(e){alert('Could not update the booking.');}
 }
 </script></body></html>
